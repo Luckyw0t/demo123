@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-6">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр и редактирование заявок</title>
+</head>
+<body>
+    <h1>Просмотр и редактирование заявок</h1>
+    <input type="text" id="searchParam" placeholder="Поиск по параметрам">
+    <button onclick="searchOrders()">Поиск</button>
+    <div id="ordersList"></div>
+
+    <script>
+        function fetchOrders() {
+            fetch('https://localhost:7081/')
+                .then(response => response.json())
+                .then(data => {
+                    const ordersList = document.getElementById('ordersList');
+                    ordersList.innerHTML = '';
+                    data.forEach(order => {
+                        const orderDiv = document.createElement('div');
+                        orderDiv.innerHTML = `
+                            <h3>Заявка №${order.numder}</h3>
+                            <p>Дата: ${order.dateAdded}</p>
+                            <p>Оборудование: ${order.device}</p>
+                            <p>Тип неисправности: ${order.problemType}</p>
+                            <p>Описание: ${order.description}</p>
+                        `;
+                        ordersList.appendChild(orderDiv);
+                    });
+                })
+                .catch(error => console.error('Ошибка:', error));
+        }
+
+        function searchOrders() {
+            const param = document.getElementById('searchParam').value;
+            fetch(`https://localhost:7081/filter/${param}`)
+                .then(response => response.json())
+                .then(data => {ordersList.appendChild(orderDiv);
+                    });
+                }
+                
+        
+
+        function editOrder(numder) {
+            const newStatus = prompt('Новый статус:');
+            const newDescription = prompt('Новое описание:');
+            const newMaster = prompt('Новый мастер:');
+            const newComment = prompt('Комментарий:');
+
+            const updatedOrder = {
+                status: newStatus,
+                description: newDescription,
+                master: newMaster,
+                comment: newComment,
+                numder: newNumber
+            };
+
+            fetch(`https://localhost:7081/${numder}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedOrder)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Заявка обновлена!');
+                fetchOrders();
+            })
+            .catch(error => console.error('Ошибка:', error));
+        }
+
+        fetchOrders();
+    </script>
+</body>
+</html>
